@@ -76,4 +76,24 @@ String input = "20250419T14:30:00Z";
 Instant instant = Instant.parse(input); // safe
 ```
 
+### Configure format
+How to make sure that you get a specific format of Instant throughout application?
+
+Although default is the same format as shown in the below example
+```
+@Configuration
+public class JacksonConfig {
+
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+        return builder -> builder.serializers(
+                new InstantSerializer(
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                                .withZone(ZoneOffset.UTC)
+                )
+        );
+    }
+}
+```
+
 
