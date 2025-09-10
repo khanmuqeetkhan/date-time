@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Formatting Demo - SV/DA/EN</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/utc.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/timezone.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/localizedFormat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/locale/sv.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/locale/da.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:hover, button:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .scenario {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .scenario:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .scenario-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+            padding-left: 15px;
+        }
+
+        .backend-data {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .backend-data::before {
+            content: 'Backend Data';
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #4299e1;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .result-card:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .result-card h4 {
+            margin: 0 0 10px 0;
+            color: #4a5568;
+            font-size: 1.1em;
+        }
+
+        .result-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3748;
+            word-wrap: break-word;
+        }
+
+        .flag {
+            font-size: 1.5em;
+            margin-right: 8px;
+        }
+
+        .analysis {
+            background: linear-gradient(135deg, #fef7cd 0%, #fbbf24 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid #f59e0b;
+        }
+
+        .analysis h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pros, .cons {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+
+        .pros {
+            border-color: #10b981;
+        }
+
+        .cons {
+            border-color: #ef4444;
+        }
+
+        .pros h4 {
+            color: #059669;
+            margin-bottom: 10px;
+        }
+
+        .cons h4 {
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+
+        .current-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🌍 Multi-Language Date Formatting Demo</h1>
+
+    <div class="current-info" id="currentInfo">
+        Loading timezone information...
+    </div>
+
+    <div class="controls">
+        <select id="languageSelect">
+            <option value="sv">🇸🇪 Swedish (SV)</option>
+            <option value="da">🇩🇰 Danish (DA)</option>
+            <option value="en">🇬🇧 English (EN)</option>
+        </select>
+
+        <select id="userTimezone">
+            <option value="Europe/Stockholm">Europe/Stockholm (Sweden)</option>
+            <option value="Europe/Copenhagen">Europe/Copenhagen (Denmark)</option>
+            <option value="America/New_York">America/New_York (US East)</option>
+            <option value="America/Los_Angeles">America/Los_Angeles (US West)</option>
+            <option value="Asia/Tokyo">Asia/Tokyo (Japan)</option>
+            <option value="UTC">UTC</option>
+        </select>
+
+        <button onclick="refreshAll()">🔄 Refresh All</button>
+    </div>
+
+    <div id="scenarios">
+        <!-- Scenarios will be populated by JavaScript -->
+    </div>
+
+    <div class="analysis">
+        <h3>📊 LocalDateTime vs Instant Analysis</h3>
+        <p>This demo shows the critical differences between using LocalDateTime and Instant in your Spring Boot backend
+            when serving international customers.</p>
+
+        <div class="pros-cons">
+            <div class="pros">
+                <h4>✅ LocalDateTime Advantages</h4>
+                <ul>
+                    <li>No timezone confusion - dates stay as intended</li>
+                    <li>Perfect for "business dates" (deadlines, appointments)</li>
+                    <li>Simpler frontend handling</li>
+                    <li>User sees consistent dates regardless of location</li>
+                    <li>No unexpected timezone conversions</li>
+                </ul>
+            </div>
+
+            <div class="cons">
+                <h4>❌ Instant Disadvantages</h4>
+                <ul>
+                    <li>Automatic timezone conversion can confuse users</li>
+                    <li>Danish user in US might see "wrong" business dates</li>
+                    <li>Requires careful frontend timezone handling</li>
+                    <li>Can shift dates unexpectedly (11 PM → next day)</li>
+                    <li>More complex to implement correctly</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize Day.js plugins
+    dayjs.extend(dayjs_plugin_utc);
+    dayjs.extend(dayjs_plugin_timezone);
+    dayjs.extend(dayjs_plugin_localizedFormat);
+
+    // Mock backend data - simulating different Spring Boot response types
+    const mockBackendData = [
+        {
+            title: "Date Only (LocalDate equivalent)",
+            description: "Business deadline - should stay the same regardless of user location",
+            backendResponse: "2024-03-15",
+            type: "date",
+            useCase: "Deadlines, business dates, birthdays"
+        },
+        {
+            title: "DateTime without Zone (LocalDateTime)",
+            description: "Meeting scheduled for 14:30 - should stay 14:30 in user's chosen timezone",
+            backendResponse: "2024-03-15T14:30:00",
+            type: "datetime-local",
+            useCase: "Scheduled meetings, appointments, fixed time events"
+        },
+        {
+            title: "DateTime with Zone (Instant)",
+            description: "Server event timestamp - automatically converts to user's current timezone",
+            backendResponse: "2024-03-15T14:30:00Z",
+            type: "datetime-instant",
+            useCase: "Server logs, real-time events, audit trails"
+        },
+        {
+            title: "DateTime with Specific Zone",
+            description: "Event in Stockholm timezone - converts relative to user's current location",
+            backendResponse: "2024-03-15T14:30:00+01:00",
+            type: "datetime-zone",
+            useCase: "International events with fixed location"
+        }
+    ];
+
+    function updateCurrentInfo() {
+        const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const currentTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+        document.getElementById('currentInfo').innerHTML =
+            `Current Browser Timezone: ${userTz} | Current Time: ${currentTime}`;
+    }
+
+    function formatDate(dateString, type, language, targetTimezone) {
+        const localeMap = {
+            'sv': 'sv-SE',
+            'da': 'da-DK',
+            'en': 'en-GB'
+        };
+
+        const locale = localeMap[language];
+        dayjs.locale(language);
+
+        let formattedDate;
+
+        switch (type) {
+            case 'date':
+                // Date only - no timezone conversion needed
+                const dateOnly = dayjs(dateString);
+                formattedDate = dateOnly.format('L');
+                break;
+
+            case 'datetime-local':
+                // LocalDateTime - treat as local to the selected timezone
+                const localDT = dayjs.tz(dateString, targetTimezone);
+                formattedDate = localDT.format('L LT');
+                break;
+
+            case 'datetime-instant':
+                // Instant - convert from UTC to user's selected timezone
+                const instant = dayjs.utc(dateString).tz(targetTimezone);
+                formattedDate = instant.format('L LT');
+                break;
+
+            case 'datetime-zone':
+                // DateTime with zone - convert to user's selected timezone
+                const zonedDT = dayjs(dateString).tz(targetTimezone);
+                formattedDate = zonedDT.format('L LT');
+                break;
+
+            default:
+                formattedDate = dayjs(dateString).format('L LT');
+        }
+
+        return formattedDate;
+    }
+
+    function generateScenarios() {
+        const language = document.getElementById('languageSelect').value;
+        const userTimezone = document.getElementById('userTimezone').value;
+        const container = document.getElementById('scenarios');
+
+        const flagMap = {
+            'sv': '🇸🇪',
+            'da': '🇩🇰',
+            'en': '🇬🇧'
+        };
+
+        container.innerHTML = '';
+
+        mockBackendData.forEach((scenario, index) => {
+            const scenarioDiv = document.createElement('div');
+            scenarioDiv.className = 'scenario';
+
+            // Format the date in all three languages for comparison
+            const svResult = formatDate(scenario.backendResponse, scenario.type, 'sv', userTimezone);
+            const daResult = formatDate(scenario.backendResponse, scenario.type, 'da', userTimezone);
+            const enResult = formatDate(scenario.backendResponse, scenario.type, 'en', userTimezone);
+
+            scenarioDiv.innerHTML = `
+                <div class="scenario-title">${scenario.title}</div>
+                <p><strong>Use Case:</strong> ${scenario.useCase}</p>
+                <p><em>${scenario.description}</em></p>
+
+                <div class="backend-data">
+                    Backend Response: "${scenario.backendResponse}"
+                </div>
+
+                <div class="results">
+                    <div class="result-card">
+                        <h4><span class="flag">🇸🇪</span>Swedish (SV)</h4>
+                        <div class="result-value">${svResult}</div>
+                    </div>
+                    <div class="result-card">
+                        <h4><span class="flag">🇩🇰</span>Danish (DA)</h4>
+                        <div class="result-value">${daResult}</div>
+                    </div>
+                    <div class="result-card">
+                        <h4><span class="flag">🇬🇧</span>English (EN)</h4>
+                        <div class="result-value">${enResult}</div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(scenarioDiv);
+        });
+    }
+
+    function refreshAll() {
+        updateCurrentInfo();
+        generateScenarios();
+    }
+
+    // Event listeners
+    document.getElementById('languageSelect').addEventListener('change', generateScenarios);
+    document.getElementById('userTimezone').addEventListener('change', generateScenarios);
+
+    // Initialize
+    updateCurrentInfo();
+    generateScenarios();
+
+    // Update time every minute
+    setInterval(updateCurrentInfo, 60000);
+</script>
+</body>
+</html>
